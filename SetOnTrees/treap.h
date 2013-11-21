@@ -32,12 +32,12 @@ public:
 
     //void merge (Node *left,Node *right);
     void copyNode(Node *&, Node *);
-
-    Treap &operator=(const Treap &);
-    Treap operator+(const Treap&);
-    Treap operator-(const Treap&);
-    Treap operator^(Treap&);
-
+    /*
+        Treap &operator=(const Treap &);
+        Treap operator+(const Treap&);
+        Treap operator-(const Treap&);
+        Treap operator^(Treap&);
+    */
 protected:
     Node *root;
 
@@ -50,11 +50,11 @@ private:
     void split (Node *, int, Node *&, Node *&);
     void merge (Node *&, Node *,Node *);
     Node *search(Node *t, int key);
-
-    void unite(Node*, Node*);
-    Treap difference(Treap&, Node*,Node*);
-    void intersect(Treap&, Treap&, Node*);
-
+    /*
+        void unite(Node*, Node*);
+        Treap difference(Treap&, Node*,Node*);
+        void intersect(Treap&, Treap&, Node*);
+    */
 };
 
 #endif

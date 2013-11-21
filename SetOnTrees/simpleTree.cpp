@@ -26,6 +26,10 @@ void SimpleTree::deleteAll()
     deleteAll(root);
 }
 
+void SimpleTree::copy(const TreeInterface *orig)
+{
+    copyNode(root,((const SimpleTree *)orig)->root);
+}
 
 void SimpleTree::print()
 {
@@ -48,6 +52,111 @@ void SimpleTree::deleteAll(Node *&ptr)
         delete ptr;
     }
 }
+//////////////////////////////////////////////////////////////
+
+
+int &SimpleTree::asteriscImpl(void *ptr)
+{
+    if(ptr)
+        return ((Node *)ptr)->value;
+    else
+        throw -1;
+}
+
+SimpleTree::Node* SimpleTree::getParent(Node* ptr)
+{
+    if(ptr == root) return 0;
+
+    Node *cur = root;
+    while(cur->left!= ptr && cur->right!= ptr)
+        cur = ptr->value < cur->value ? cur->left : cur->right;
+    return cur;
+}
+
+void *SimpleTree::beginImpl()
+{
+    Node *cur=root;
+    if(cur)
+        while(cur->left)
+            cur = cur->left;
+
+    return (void*)cur;
+}
+
+void SimpleTree::nextImpl(void *&ptr)
+{
+    Node *cur = (Node *)ptr;
+    Node *y;
+    if(cur)
+    {
+        if(cur->right)
+        {
+            cur = cur->right;
+
+            while(cur->left)
+                cur = cur->left;
+        }
+        else
+        {
+            y=getParent(cur);
+            while(y && cur == y->right)
+            {
+                cur = y;
+                y=getParent(y);
+            }
+            if(!getParent(cur))
+                cur = 0;
+            else
+                cur = getParent(cur);
+        }
+
+        ptr = (void *)cur;
+    }
+}
+
+void SimpleTree::previousImpl(void *&ptr)
+{
+    Node *cur = (Node *)ptr;
+    Node *y;
+
+    if(cur)
+    {
+        if(cur->left)
+        {
+            cur = cur->left;
+
+            while(cur->right)
+                cur = cur->right;
+
+            ptr = (void *)cur;
+        }
+        else
+        {
+            y=getParent(cur);
+            while(y && cur == y->left)
+            {
+                cur = y;
+                y=getParent(y);
+            }
+
+            if(getParent(cur))
+                ptr = (void *)getParent(cur);
+            else
+                return;
+        }
+    }
+    else
+    {
+        cur = root;
+        if(cur)
+            while(cur->right)
+                cur = cur->right;
+        ptr = (void*)cur;
+    }
+}
+
+
+
 
 ///////////////////////////////////////////////////////////
 

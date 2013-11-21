@@ -3,11 +3,12 @@
 
 #include "nvi.h"
 
+
 class SimpleTree: public TreeInterface
 {
 
 protected:
-struct Node
+    struct Node
     {
         int value;
         Node *left;
@@ -22,7 +23,11 @@ struct Node
     Node *root;
 public:
 
+    Node* getParent(Node*);
+
     SimpleTree();
+    SimpleTree(const TreeInterface*);
+    SimpleTree (const SimpleTree &orig);
     ~SimpleTree();
 
     void insert(int);
@@ -30,13 +35,11 @@ public:
     void deleteAll();
     void print();
 
-    SimpleTree (const SimpleTree &);
-    void copyNode(Node *&, Node *);
+        SimpleTree &operator=(const SimpleTree &);
+        SimpleTree operator+(const SimpleTree&);
+        SimpleTree operator-(const SimpleTree&);
+        SimpleTree operator^(SimpleTree&);
 
-    SimpleTree &operator=(const SimpleTree &);
-    SimpleTree operator+(const SimpleTree&);
-    SimpleTree operator-(const SimpleTree&);
-    SimpleTree operator^(SimpleTree&);
 
 private:
     void insert(Node*&, int);
@@ -44,10 +47,21 @@ private:
     void deleteAll(Node *&);
     void print(Node*,int);
 
-    void unite(Node *l, Node *&r);
-    SimpleTree difference(SimpleTree&, Node*,Node*);
-    void intersect(SimpleTree&, SimpleTree&, Node*);
+    //void copyNode(Node *&, Node *);
 
+    int &asteriscImpl(void*) ;
+    void nextImpl(void*&);
+    void previousImpl(void*&);
+    void *beginImpl();
+
+//////////////////////////////////////////////////////////
+
+    void copy(const TreeInterface*);
+    void copyNode(Node*&, Node*);
+
+        void unite(Node *l, Node *&r);
+        SimpleTree difference(SimpleTree&, Node*,Node*);
+        void intersect(SimpleTree&, SimpleTree&, Node*);
 };
 
 #endif

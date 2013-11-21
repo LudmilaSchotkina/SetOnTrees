@@ -9,8 +9,8 @@ using namespace std;
 
 int main()
 {
-    Treap tree;
-    //SimpleTree tree;
+   //Treap tree;
+    SimpleTree tree;
 
     int value;
     fstream fileTreap;
@@ -35,8 +35,8 @@ int main()
 
     cout<<"_____________TREE 2__________________"<<endl<<endl;
 
-    Treap tree2;
-    //SimpleTree tree2;
+    //Treap tree2;
+    SimpleTree tree2;
 
     fstream file;
     file.open("treap2.txt");
@@ -57,8 +57,8 @@ int main()
     cout<<endl<<endl<<endl;
 
 
-    Treap c,d,e;
-    //SimpleTree c,d,e;
+    //Treap c,d,e;
+    SimpleTree c,d,e;
 
     cout<<"---------------DIFFERENCE---------------"<<endl<<endl;
     d=tree-tree2;

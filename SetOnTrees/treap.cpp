@@ -50,7 +50,7 @@ void Treap::deleteAll(Node *&ptr)
 }
 
 ////////////////////////////////////////////////////
-
+/*
 Treap &Treap::operator=(const Treap &orig)
 {
     if(this==&orig)
@@ -93,7 +93,7 @@ Treap Treap::operator^(Treap &orig)
     return temp;
 }
 
-
+*/
 
 
 ////////////////////////////////////////////////
@@ -205,6 +205,7 @@ void Treap::split (Node *ptr, int value, Node *&left, Node *&right)
 }
 
 //////////////////////////////////////////////////////
+/*
 void Treap::unite(Node *l, Node *r)
 {
     if(r)
@@ -246,6 +247,8 @@ void Treap::intersect(Treap &a, Treap &b, Node *ptr)
     intersect(a,b,ptr->left);
     intersect(a,b,ptr->right);
 }
+*/
+
 
 /*
 void Treap::merge (Node *left,Node *right)
