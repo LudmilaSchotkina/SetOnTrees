@@ -9,8 +9,11 @@ using namespace std;
 
 int main()
 {
-   //Treap tree;
-    SimpleTree tree;
+    Treap *treap = new Treap;
+    Treap *treap2 = new Treap;
+    Set setTree(treap);
+    Set setTree2(treap2);
+
 
     int value;
     fstream fileTreap;
@@ -26,54 +29,65 @@ int main()
     while(!fileTreap.eof())
     {
         fileTreap>>value;
-        tree.insert(value);
+        setTree.insertValue(value);
     }
     fileTreap.close();
-    tree.print();
+    setTree.outputTree();
     cout<<endl<<endl<<endl;
-
+    cout<<"Bypass (Set): ";
+    setTree.outputSet();
+    cout<<endl<<endl;
 
     cout<<"_____________TREE 2__________________"<<endl<<endl;
 
-    //Treap tree2;
-    SimpleTree tree2;
+    fstream fileTreap2;
+    fileTreap2.open("treap2.txt");
 
-    fstream file;
-    file.open("treap2.txt");
-
-    if(!file)
+    if(!fileTreap2)
     {
         cerr<<"Error 404"<<endl;
         return -1;
     }
 
-    while(!file.eof())
+    while(!fileTreap2.eof())
     {
-        file>>value;
-        tree2.insert(value);
+        fileTreap2>>value;
+        setTree2.insertValue(value);
     }
-    file.close();
-    tree2.print();
+    fileTreap2.close();
+    setTree2.outputTree();
+    cout<<endl<<endl;
+    cout<<"Bypass (Set): ";
+    setTree2.outputSet();
     cout<<endl<<endl<<endl;
 
 
-    //Treap c,d,e;
-    SimpleTree c,d,e;
+    int choise;
 
-    cout<<"---------------DIFFERENCE---------------"<<endl<<endl;
-    d=tree-tree2;
-    d.print();
-    cout<<endl<<endl<<endl;
-
-    cout<<"^^^^^^^^^^^^^^^INTERSECT^^^^^^^^^^^^^^^^"<<endl<<endl;
-    e=tree2^tree;
-    e.print();
-    cout<<endl<<endl<<endl;
-
-    cout<<"++++++++++++++++++UNION++++++++++++++++++"<<endl<<endl;
-    c=tree+tree2;
-
-    c.print();
-
+    cout<<"1 - unite "<<endl<<"2 - difference "<<endl<<"3 - intersect "<<endl<<"0 - exit "<<endl;
+    cin>>choise;
+    switch (choise)
+    {
+    case 0:
+        choise=0;
+        break;
+    case 1:
+        cout<<"++++++++++++++++++UNION++++++++++++++++++"<<endl<<endl;
+        (setTree+setTree2).outputTree();
+        break;
+    case 2:
+        cout<<"---------------DIFFERENCE---------------"<<endl<<endl;
+        (setTree2-setTree).outputSet();
+        cout<<endl<<endl<<endl;
+        break;
+    case 3:
+        cout<<"^^^^^^^^^^^^^^^INTERSECTION^^^^^^^^^^^^^^^^"<<endl<<endl;
+        (setTree2^setTree).outputSet();
+        cout<<endl<<endl<<endl;
+        break;
+    default:
+        cout<<"wrong key"<<endl;
+        break;
+    }
     return 0;
 }

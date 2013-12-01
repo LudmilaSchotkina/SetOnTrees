@@ -19,82 +19,144 @@ Treap::Treap (const Treap &orig)
 
 Treap::~Treap ()
 {
-    deleteAll();
+    removeAll();
 }
 
-void Treap::deleteAll()
+void Treap::insert(int val)
 {
-    deleteAll(root);
-}
-
-void Treap::print()
-{
-    print(root,0);
+    insert(root, new Node(val, rand()%1000+1, 1));
 }
 bool Treap::find(int key)
 {
     return find(root, key);
 }
-void Treap::insert(int val)
+void Treap::remove(int val)
 {
-    insert(root, new Node(val, rand()%1000+1, 1));
+    remove(root, val);
 }
-void Treap::deleteAll(Node *&ptr)
+void Treap::removeAll()
+{
+    removeAll(root);
+}
+void Treap::removeAll(Node *&ptr)
 {
     if(ptr)
     {
-        deleteAll(ptr->left);
-        deleteAll(ptr->right);
+        removeAll(ptr->left);
+        removeAll(ptr->right);
         delete ptr;
     }
 }
+void Treap::print()
+{
+    print(root,0);
+}
 
+void Treap::copy(const TreeInterface *orig)
+{
+    copyNode(root,((const Treap*)orig)->root);
+}
 ////////////////////////////////////////////////////
-/*
-Treap &Treap::operator=(const Treap &orig)
+
+int &Treap::asteriscImpl(void *ptr)
 {
-    if(this==&orig)
-        return *this;
-    deleteAll(root);
-    copyNode(root,orig.root);
-    return *this;
+    if(ptr)
+        return ((Node *)ptr)->value;
+    else
+        throw -1;
 }
 
-Treap Treap::operator+(const Treap &orig)
+Treap::Node* Treap::getParent(Node* ptr)
 {
-    Treap tmp=orig;
-    unite(root, tmp.root);
-    return *this;
+    if(ptr == root) return 0;
+
+    Node *cur = root;
+    while(cur->left!= ptr && cur->right!= ptr)
+        cur = ptr->value < cur->value ? cur->left : cur->right;
+    return cur;
 }
 
-Treap Treap::operator-(const Treap &orig)
+void *Treap::beginImpl()
 {
-    Treap temp;
-    if(!this && orig.root)
+    Node *cur=root;
+    if(cur)
+        while(cur->left)
+            cur = cur->left;
+
+    return (void*)cur;
+}
+
+void Treap::nextImpl(void *&ptr)
+{
+    Node *cur = (Node *)ptr;
+    Node *y;
+    if(cur)
     {
-        deleteAll(temp.root);
-        *this=temp;
+        if(cur->right)
+        {
+            cur = cur->right;
+
+            while(cur->left)
+                cur = cur->left;
+        }
+        else
+        {
+            y=getParent(cur);
+            while(y && cur == y->right)
+            {
+                cur = y;
+                y=getParent(y);
+            }
+            if(!getParent(cur))
+                cur = 0;
+            else
+                cur = getParent(cur);
+        }
+
+        ptr = (void *)cur;
     }
-    else  if(this && !orig.root)
-        return *this;
-    if(this!=&orig)
+}
+
+void Treap::previousImpl(void *&ptr)
+{
+    Node *cur = (Node *)ptr;
+    Node *y;
+
+    if(cur)
     {
-        difference(temp,root,orig.root);
-        return temp;
+        if(cur->left)
+        {
+            cur = cur->left;
+
+            while(cur->right)
+                cur = cur->right;
+
+            ptr = (void *)cur;
+        }
+        else
+        {
+            y=getParent(cur);
+            while(y && cur == y->left)
+            {
+                cur = y;
+                y=getParent(y);
+            }
+
+            if(getParent(cur))
+                ptr = (void *)getParent(cur);
+            else
+                return;
+        }
     }
     else
-        return *this;
+    {
+        cur = root;
+        if(cur)
+            while(cur->right)
+                cur = cur->right;
+        ptr = (void*)cur;
+    }
 }
-
-Treap Treap::operator^(Treap &orig)
-{
-    Treap temp;
-    intersect(temp, orig, root);
-    return temp;
-}
-
-*/
-
 
 ////////////////////////////////////////////////
 ////////////////FUNCTIONS UTILITIES/////////////
@@ -120,6 +182,35 @@ void Treap::copyNode(Node *&newNode, Node *orig)
     }
 }
 
+void Treap::insert(Node *&ptr, Node *val)
+{
+    Node *newNode;
+    newNode= new Node(val->value,val->priority,val->counter);
+if (find(ptr,val->value))
+    {
+        //
+        newNode=search(ptr,val->value);
+
+        newNode->counter=newNode->counter+val->counter;
+        cout<<"!!!"<<newNode->counter<<" "<<newNode->value<<"___"<<val->counter<<" "<<val->value<<endl;
+    }
+    else if(!find(root,val->value))
+    {
+        if (ptr==0)
+            ptr=val;
+        else if (val->priority > ptr->priority)
+        {
+            split(ptr,val->value,val->left, val->right);
+            ptr=val;
+        }
+        else if (val->value > ptr->value)
+            insert(ptr->right,val);
+
+        else if (val->value < ptr->value)
+            insert(ptr->left,val);
+    }
+
+}
 void Treap::print(Node *ptr,int element)
 {
     while (ptr)
@@ -147,7 +238,7 @@ bool Treap::find(Node *ptr, int value)
     }
     return false;
 }
-Node *Treap::search(Node *t, int value)
+Treap::Node *Treap::search(Node *t, int value)
 {
     while(t)
     {
@@ -160,30 +251,50 @@ Node *Treap::search(Node *t, int value)
     return 0;
 }
 
-void Treap::insert(Node *&ptr, Node *val)
+
+void Treap::remove(Node *ptr,int val)
 {
-    Node *newNode;
-    newNode= new Node(val->value,val->priority,val->counter);
+    Node  *parent=0, *x;
 
-    if(!find(root,val->value))
+    while(ptr)
     {
-        if (ptr==0)
-            ptr=val;
-        else if (val->priority > ptr->priority)
+        if(val == ptr->value)
+            break;
+        else
         {
-            split(ptr,val->value,val->left, val->right);
-            ptr=val;
+            parent = ptr;
+            ptr = val < ptr->value ? ptr->left : ptr->right;
         }
-        else if (val->value > ptr->value)
-            insert(ptr->right,val);
-
-        else if (val->value < ptr->value)
-            insert(ptr->left,val);
     }
-    else if(find(ptr,val->value))
+
+    if(ptr)
     {
-        newNode=search(ptr,val->value);
-        newNode->counter=newNode->counter+val->counter;
+        if (ptr->left == 0 || ptr->right == 0)
+        {
+            x = ptr->left!=0 ? ptr->left : ptr->right;
+            if(ptr == root)
+            {
+                delete root;
+                root = x;
+            }
+            else
+            {
+                if(parent->left == ptr)
+                    parent->left = x;
+                else parent->right = x;
+                delete ptr;
+                ptr = 0;
+            }
+        }
+        else
+        {
+            x = ptr->right;
+            while(x->left)
+                x = x->left;
+            int value = x->value;
+            remove(x->value);
+            ptr->value = value;
+        }
     }
 }
 
@@ -203,74 +314,4 @@ void Treap::split (Node *ptr, int value, Node *&left, Node *&right)
         right=ptr;
     }
 }
-
-//////////////////////////////////////////////////////
-/*
-void Treap::unite(Node *l, Node *r)
-{
-    if(r)
-    {
-        insert(l, new Node(r->value, r->priority,r->counter));
-        unite(l,r->left);
-        unite(l,r->right);
-    }
-}
-
-Treap Treap::difference(Treap &ptr, Node *a,Node *b)
-{
-    Node *newNode;
-
-    if(a)
-    {
-        if(!find(b, a->value))
-            ptr.insert(ptr.root, new Node(a->value, a->priority,a->counter));
-        else  if(find(b, a->value))
-        {
-            newNode= new Node(b->value,b->priority,b->counter);
-            newNode=search(b,a->value);
-            a->counter= a->counter-b->counter;
-            ptr.insert(ptr.root, new Node(a->value, a->priority,a->counter));
-        }
-        difference(ptr, a->left, b);
-        difference(ptr, a->right, b);
-
-    }
-    return ptr;
-}
-
-void Treap::intersect(Treap &a, Treap &b, Node *ptr)
-{
-    if(!ptr) return;
-
-    if(b.find(ptr->value))
-        a.insert(ptr->value);
-    intersect(a,b,ptr->left);
-    intersect(a,b,ptr->right);
-}
-*/
-
-
-/*
-void Treap::merge (Node *left,Node *right)
-{
-    merge (root, left,right);
-}
-void Treap::merge (Node *&ptr, Node *left,Node *right)
-{
-    if (!left || !right)
-        ptr = left ? left : right;
-    else if (left->priority > right->priority)
-    {
-        merge (left->right, left->right, right);
-        ptr = left;
-    }
-    else
-    {
-        merge (right->left, left, right->left);
-        ptr = right;
-    }
-}
-
-*/
-
 

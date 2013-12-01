@@ -18,12 +18,12 @@ SimpleTree::SimpleTree (const SimpleTree &original)
 
 SimpleTree::~SimpleTree ()
 {
-    deleteAll();
+    removeAll();
 }
 
-void SimpleTree::deleteAll()
+void SimpleTree::removeAll()
 {
-    deleteAll(root);
+    removeAll(root);
 }
 
 void SimpleTree::copy(const TreeInterface *orig)
@@ -31,29 +31,32 @@ void SimpleTree::copy(const TreeInterface *orig)
     copyNode(root,((const SimpleTree *)orig)->root);
 }
 
-void SimpleTree::print()
+void SimpleTree::insert(int val)
 {
-    print(root,0);
+    insert(root, val);
 }
 bool SimpleTree::find(int key)
 {
     return find(root, key);
 }
-void SimpleTree::insert(int val)
+void SimpleTree::remove(int val)
 {
-    insert(root, val);
+    remove(root, val);
 }
-void SimpleTree::deleteAll(Node *&ptr)
+void SimpleTree::removeAll(Node *&ptr)
 {
     if(ptr)
     {
-        deleteAll(ptr->left);
-        deleteAll(ptr->right);
+        removeAll(ptr->left);
+        removeAll(ptr->right);
         delete ptr;
     }
 }
+void SimpleTree::print()
+{
+    print(root,0);
+}
 //////////////////////////////////////////////////////////////
-
 
 int &SimpleTree::asteriscImpl(void *ptr)
 {
@@ -155,58 +158,6 @@ void SimpleTree::previousImpl(void *&ptr)
     }
 }
 
-
-
-
-///////////////////////////////////////////////////////////
-
-SimpleTree &SimpleTree::operator=(const SimpleTree &original)
-{
-    if(this==&original)
-        return *this;
-    deleteAll(root);
-    copyNode(root,original.root);
-    return *this;
-}
-
-SimpleTree SimpleTree::operator+(const SimpleTree &orig)
-{
-    if(this!= &orig)
-    {
-        SimpleTree tmp=orig;
-        unite(root, tmp.root);
-        return tmp;
-    }
-    return *this;
-}
-
-SimpleTree SimpleTree::operator-(const SimpleTree &orig)
-{
-    SimpleTree temp;
-    if(!this && orig.root)
-    {
-        deleteAll(temp.root);
-        *this=temp;
-    }
-    else  if(this && !orig.root)
-        return *this;
-    if(this!=&orig)
-    {
-        difference(temp,root,orig.root);
-        return temp;
-    }
-    else
-        return *this;
-}
-
-SimpleTree SimpleTree::operator^(SimpleTree &orig)
-{
-    SimpleTree temp;
-    intersect(temp, orig, root);
-    return temp;
-}
-
-
 ////////////////////////////////////////////////
 ////////////////FUNCTIONS UTILITIES/////////////
 ////////////////////////////////////////////////
@@ -229,22 +180,18 @@ void SimpleTree::copyNode(Node *&newNode, Node *original)
             newNode->right =0;
     }
 }
-void SimpleTree::print(Node *ptr,int element)
+
+void SimpleTree::insert(Node *&ptr, int val)
 {
-    while (ptr)
-    {
-        print(ptr->right, element+2);
+    if (ptr==0)
+        ptr=new Node(val);
+    else if (val < ptr->value)
+        insert(ptr->left,val);
 
-        for (int i=1; i<element; ++i)
-            cout << ' ';
-
-        cout << ptr->value<<endl;
-        ptr = ptr->left;
-        element += 2;
-    }
+    else if (val > ptr->value)
+        insert(ptr->right,val);
 
 }
-
 bool SimpleTree::find(Node *ptr, int value)
 {
     while (ptr)
@@ -259,51 +206,61 @@ bool SimpleTree::find(Node *ptr, int value)
 
 }
 
-void SimpleTree::insert(Node *&ptr, int val)
+
+void SimpleTree::remove(Node *ptr,int val)
 {
-    if (ptr==0)
-        ptr=new Node(val);
-    else if (val < ptr->value)
-        insert(ptr->left,val);
-
-    else if (val > ptr->value)
-        insert(ptr->right,val);
-
-}
-
-////////////////////////////////////////////////////////
-
-void SimpleTree::unite(Node *l, Node *&r)
-{
-    if(l)
+    Node  *parent=0, *x;
+    while(ptr)
     {
-        insert(r, l->value);
-        if(l->right)
-            unite(l->right,r);
-        if(l->left)
-            unite(l->left,r);
+        if(val == ptr->value)
+            break;
+        else
+        {
+            parent = ptr;
+            ptr = val < ptr->value ? ptr->left : ptr->right;
+        }
+    }
+    if(ptr)
+    {
+        if (ptr->left == 0 || ptr->right == 0)
+        {
+            x = ptr->left!=0 ? ptr->left : ptr->right;
+            if(ptr == root)
+            {
+                delete root;
+                root = x;
+            }
+            else
+            {
+                if(parent->left == ptr)
+                    parent->left = x;
+                else parent->right = x;
+                delete ptr;
+                ptr = 0;
+            }
+        }
+        else
+        {
+            x = ptr->right;
+            while(x->left)
+                x = x->left;
+            int value = x->value;
+            remove(x->value);
+            ptr->value = value;
+        }
     }
 }
 
-SimpleTree SimpleTree::difference(SimpleTree &ptr, Node *a,Node *b)
+void SimpleTree::print(Node *ptr,int element)
 {
-    if(a)
+    while (ptr)
     {
-        if(!find(b, a->value))
-            ptr.insert(ptr.root, a->value);
+        print(ptr->right, element+2);
 
-        difference(ptr, a->left, b);
-        difference(ptr, a->right, b);
+        for (int i=1; i<element; ++i)
+            cout << ' ';
+        cout << ptr->value<<endl;
+        ptr = ptr->left;
+        element += 2;
     }
-    return ptr;
 }
-
-void SimpleTree::intersect(SimpleTree &a, SimpleTree &b, Node *ptr)
-{
-    if(!ptr) return;
-    if(b.find(ptr->value))
-        a.insert(ptr->value);
-    intersect(a,b,ptr->left);
-    intersect(a,b,ptr->right);
-}
-

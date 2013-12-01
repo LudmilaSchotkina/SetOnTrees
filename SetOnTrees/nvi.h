@@ -1,7 +1,6 @@
 #ifndef NVI_H
 #define NVI_H
 
-struct Node;
 class Iterator;
 
 class TreeInterface //NVI
@@ -15,7 +14,9 @@ public:
 
     void insertElement(int);
     bool findElement(int);
-    void removeAll();
+    void removeElement(int);
+    void removeAllTree();
+    void output();
 
     Iterator begin();
     Iterator end();
@@ -23,7 +24,9 @@ public:
 private:
     virtual void insert(int) = 0;
     virtual bool find(int) = 0;
-    virtual void deleteAll() {};
+    virtual void remove(int) = 0;
+    virtual void removeAll() = 0;
+    virtual void print() = 0;
 
     virtual void copy(const TreeInterface*) {}
 
@@ -36,9 +39,8 @@ private:
     virtual void previousImpl(void*&) = 0;
 
     virtual void *beginImpl() = 0;
-    // virtual void *endImpl() = 0;
-
 };
+
 
 class Iterator
 {
@@ -47,23 +49,18 @@ public:
 
     Iterator();
     ~Iterator();
+    Iterator (TreeInterface*, void*);
 
     int &operator*();
     Iterator operator++();
     Iterator operator++(int);
 
-    Iterator operator--();
-    Iterator operator--(int);
-
     bool operator==(const Iterator&);
     bool operator!=(const Iterator&);
-
-    Iterator (TreeInterface*, void*);
 
 private:
     TreeInterface *owner;
     void *cur;
-
 };
 
 #endif

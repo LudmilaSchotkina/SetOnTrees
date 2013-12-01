@@ -1,6 +1,43 @@
 #include "nvi.h"
 #include "treap.h"
 
+TreeInterface::TreeInterface(const TreeInterface &orig)
+{
+    copy(&orig);
+}
+
+TreeInterface::~TreeInterface()
+{
+    removeAllTree();
+}
+
+void TreeInterface::insertElement(int val)
+{
+    insert(val);
+}
+
+bool TreeInterface::findElement(int val)
+{
+    return find(val);
+}
+
+void TreeInterface::removeElement(int val)
+{
+    remove(val);
+}
+
+void TreeInterface::removeAllTree()
+{
+    removeAll();
+}
+
+void TreeInterface::output()
+{
+    print();
+}
+
+//////////////////////////////////////////////////////
+
 Iterator::Iterator():
     owner(0),
     cur(0)
@@ -38,22 +75,6 @@ Iterator Iterator::operator++(int)
     return result;
 }
 
-Iterator Iterator::operator--()
-{
-    if(owner)
-        owner->previous(cur);
-
-    return *this;
-}
-
-Iterator Iterator::operator--(int)
-{
-    Iterator result(*this);
-    --(*this);
-    return result;
-}
-
-
 bool Iterator::operator==(const Iterator &smth)
 {
     return owner == smth.owner && cur == smth.cur;
@@ -64,13 +85,11 @@ bool Iterator::operator!=(const Iterator &smth)
     return !(*this == smth);
 }
 
-
 /////////////////////////////////////////////
 int &TreeInterface::asterisc(void *ptr)
 {
     return asteriscImpl(ptr);
 }
-
 
 Iterator TreeInterface::begin()
 {
@@ -82,7 +101,6 @@ Iterator TreeInterface::end()
     return Iterator(this, 0);
 }
 
-
 void TreeInterface::next(void *&ptr)
 {
     nextImpl(ptr);
@@ -91,32 +109,4 @@ void TreeInterface::next(void *&ptr)
 void TreeInterface::previous(void *&ptr)
 {
     previousImpl(ptr);
-}
-
-
-////////////////////////////////////////////////////
-
-TreeInterface::TreeInterface(const TreeInterface &orig)
-{
-    copy(&orig);
-}
-
-TreeInterface::~TreeInterface()
-{
-    deleteAll();
-}
-
-void TreeInterface::insertElement(int val)
-{
-    insert(val);
-}
-
-bool TreeInterface::findElement(int val)
-{
-    return find(val);
-}
-
-void TreeInterface::removeAll()
-{
-    deleteAll();
 }

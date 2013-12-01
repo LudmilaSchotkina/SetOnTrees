@@ -3,6 +3,10 @@
 
 #include "nvi.h"
 
+
+class Treap: public TreeInterface
+{
+protected:
 struct Node
 {
     int value;
@@ -18,8 +22,7 @@ struct Node
         counter=cnt;
     }
 };
-class Treap: public TreeInterface
-{
+    Node *root;
 public:
     Treap();
     Treap (const Treap &);
@@ -27,34 +30,32 @@ public:
 
     void insert(int);
     bool find(int key);
-    void deleteAll();
+    void remove(int);
+    void removeAll();
     void print();
-
-    //void merge (Node *left,Node *right);
-    void copyNode(Node *&, Node *);
-    /*
-        Treap &operator=(const Treap &);
-        Treap operator+(const Treap&);
-        Treap operator-(const Treap&);
-        Treap operator^(Treap&);
-    */
-protected:
-    Node *root;
 
 private:
     void insert(Node*&, Node*);
     bool find(Node*, int);
-    void deleteAll(Node *&);
+    void remove(Node*, int);
+    void removeAll(Node *&);
     void print(Node*,int);
 
+    int &asteriscImpl(void*) ;
+    void nextImpl(void*&);
+    void previousImpl(void*&);
+    void *beginImpl();
+
+
+
+    void copy(const TreeInterface*);
+    void copyNode(Node *&, Node *);
+
+    Node* getParent(Node*);
     void split (Node *, int, Node *&, Node *&);
     void merge (Node *&, Node *,Node *);
     Node *search(Node *t, int key);
-    /*
-        void unite(Node*, Node*);
-        Treap difference(Treap&, Node*,Node*);
-        void intersect(Treap&, Treap&, Node*);
-    */
+
 };
 
 #endif

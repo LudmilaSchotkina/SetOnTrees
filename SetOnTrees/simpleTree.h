@@ -31,39 +31,29 @@ public:
     ~SimpleTree();
 
     void insert(int);
-    bool find(int key);
-    void deleteAll();
+    bool find(int);
+    void remove(int);
+    void removeAll();
     void print();
-
-        SimpleTree &operator=(const SimpleTree &);
-        SimpleTree operator+(const SimpleTree&);
-        SimpleTree operator-(const SimpleTree&);
-        SimpleTree operator^(SimpleTree&);
-
 
 private:
     void insert(Node*&, int);
     bool find(Node*, int);
-    void deleteAll(Node *&);
+    void remove(Node*, int);
+    void removeAll(Node *&);
     void print(Node*,int);
 
-    //void copyNode(Node *&, Node *);
 
     int &asteriscImpl(void*) ;
     void nextImpl(void*&);
     void previousImpl(void*&);
     void *beginImpl();
 
-//////////////////////////////////////////////////////////
 
     void copy(const TreeInterface*);
     void copyNode(Node*&, Node*);
 
-        void unite(Node *l, Node *&r);
-        SimpleTree difference(SimpleTree&, Node*,Node*);
-        void intersect(SimpleTree&, SimpleTree&, Node*);
 };
 
+
 #endif
-
-
